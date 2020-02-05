@@ -224,36 +224,9 @@ it has been correctly written to be different from the OR test...
                                 },
                             },
                         },
-```
- 
-If we were to generate policies from predefined constants, this could be easily addressed, without adding any framework/harness overhead.
- 
-```
- 
-                    Ingress: []networkingv1.NetworkPolicyIngressRule{{
-                        From: []networkingv1.NetworkPolicyPeer{
-                            {
-                                PodSelector: clientBPod
-                            }, 
-                            {
-                                NamespaceSelector: nsASelector
-                            },
-                        },
-```
- 
-```
- 
-                    Ingress: []networkingv1.NetworkPolicyIngressRule{{
-                        From: []networkingv1.NetworkPolicyPeer{
-                            {
-                                PodSelector: clientBPod,
-                                NamespaceSelector: nsASelector
-                            },
-                        },
-```
- 
-This would also of course make code much more reusable.
- 
+``` 
+We can of course make this much easier to reuse and reasoon about, as well as make it self documenting, and will outline how in the solutions section.
+
 ### Performance
  
 For every current test, a new container is spun up, and a polling process occurs where we wait for the pod to complete succesfully.  Because all clusters start pods at different rates, heuristics have to be relied on for timing a test out.  A large, slow cluster may not be capable of spinning pods of quickly, and thus may timeout one of the 23 tests, leading to a false negative result.
@@ -353,23 +326,27 @@ code snippet or API example.
 ##### Only define whitelisted communication as part of the verification of connectivity
  
 Since verification is quite extensive for these tests, the `Ginkgo.By` statements will be done iteratively,
-rather then using bespoke sentences for each case.  This can be done by mapping a set of predefined network policies to a change set, which defines exactly which namespace/pod pairs are allowed to talk to one another.  This can be expressed in go code as follows, using `DenyAll` as an easy to understand example.
+rather then using bespoke sentences for each case.  This can be done by mapping a set of predefined network policies to a change set, which defines exactly which namespace/pod pairs are allowed to talk to one another.  This can be expressed in go code as follows, using `AllowAllInnerNamespace` as an easy to understand example.
  
 ```
-// DenyAll is a NP that denies all traffic, selects no whitelist pods.
-var DenyAll = &TruthTableEntry{
-	Description: "Should support a default-deny policy [Feature:NetworkPolicy]",
+
+// AllowAllInnerNamespace is a NP that allows local client 'a' via a pod selector
+var AllowAllInnerNamespace = &TruthTableEntry{
+	OldDescription: "should enforce policy to allow traffic from pods within server namespace based on PodSelector [Feature:NetworkPolicy]",
+	Description:    "ALLOW inner-namespace, PodSelector traffic to the server [Feature:NetworkPolicy]",
 	Policy: &networkingv1.NetworkPolicy{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "deny-all",
+			Name: "allow-client-a-via-pod-selector",
 		},
 		Spec: networkingv1.NetworkPolicySpec{
-			PodSelector: emptyLabelSelector,
-			Ingress:     emptyIngress,
+			PodSelector: serverPodSelector,
+			Ingress: []networkingv1.NetworkPolicyIngressRule{
+				ingressRuleClientA,
+			},
 		},
 	},
-	// The pods which are whitelisted by this policy.
-	Whitelist: map[string]string{},
+	// A lone pod selector will apply only to inner namespace traffic.
+	Whitelist: map[string]bool{"AaAs": true},
 }
 ```
 As a side note: the comingled `Whitelist` fields above makes the semantics of our network policy API highly explicit, helping significantly with the Documentation of NetworkPolicies.
@@ -391,7 +368,7 @@ Currently almost every test had a clause such as:
             })
 ```
  
-And a verbose `policy := &networkingv1.NetworkPolicy{ ... }` declaration, which is 20 to 50 lines long (see problem statement for details). As demonstrated in the `DenyAll` example, these verbose policy structs no long exist in the individual tests, and are also the actual declaration for said policies is much smaller, meaning that subtle differences highlighted in the *problems* section above will be easier to tease out and reason about.
+And a verbose `policy := &networkingv1.NetworkPolicy{ ... }` declaration, which is 20 to 50 lines long (see problem statement for details). As demonstrated in the `AllowAllInnerNamespace` example, these verbose policy structs no long exist in the individual tests, and are also the actual declaration for said policies is much smaller, meaning that subtle differences highlighted in the *problems* section above will be easier to tease out and reason about.
  
 ##### Part 3:
  
