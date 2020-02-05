@@ -10,9 +10,11 @@ The current network policy tests have a few issues which, without increasing tec
 - *Performance*: They suffer from low performance due to the high number of pods created.  Network policy tests can take 30 minutes or longer.
 - *Documentation and Community*: The overall situation for these tests is that they are underdocumented and poorly understood by the community, and its not clear how these tests are vetted when they are modified.
  
-### Related issues:  TODO, find these and fill them out, most importantly the ingress update pod issue which demonstrates that we arent curating these tests as a community.
+### Related issues
+
+TODO, find these and fill them out, most importantly the ingress update pod issue which demonstrates that we arent curating these tests as a community.
  
-== Consequences of this problem
+### Consequences of this problem
  
 The consequences of this problem is that
  
@@ -22,9 +24,9 @@ The consequences of this problem is that
 - Extending NetworkPolicy tests is time consuming and error prone, without a structured review process and acceptance standard.
 - It is hard to debug tests, due to the performance characteristics - pods are deleted after each test, so we cannot reproduce the state of the cluster easily.
  
-== Detailed examples of the Problem statement
+## Detailed examples of the Problem statement
  
-=== Incompleteness
+### Incompleteness
  
 For our first example, we will look at the incompleteness of one of the first tests
 in the test suite for network_policy.go.  In this test, the following assertions are
@@ -93,7 +95,7 @@ namespaces created in the entire network policy test suite.
 +-------------------------------------------------------------------------+
 ```
  
-=== Understandability
+### Understandability
  
 In this next case, we'll take another example test, which is meant to confirm that intra-namespace
 traffic rules work properly.  This test has a misleading description, and an incomplete test matrix as well.
@@ -147,7 +149,7 @@ the semantics of it.
 +----------------------------------------------------------------------------------------------+
 ```
  
-=== Extensibility
+### Extensibility
  
 The previous scenarios look at logical issues with the current tests.  These issues can be mitigated by simply having more tests, which are as verbose as the existing tests.  However.
  
@@ -250,7 +252,7 @@ If we were to generate policies from predefined constants, this could be easily 
  
 This would also of course make code much more reusable.
  
-=== Performance
+### Performance
  
 For every current test, a new container is spun up, and a polling process occurs where we wait for the pod to complete succesfully.  Because all clusters start pods at different rates, heuristics have to be relied on for timing a test out.  A large, slow cluster may not be capable of spinning pods of quickly, and thus may timeout one of the 23 tests, leading to a false negative result.
  
@@ -258,7 +260,7 @@ In some clusters, for example, namespace deletion is known to be slow - and in t
  
 - If network policys or pod CIDR's are not correct, its likely all tests can fail, and thus the network policy suite may take an hour to finish, based on the estimate of 3 minutes, for each failed test, alongside 23 tests (in general , NetworkPolicy tests on a healthy EC2 cluster, with no traffic and broken network policy's, take between 150 and 200 seconds complete).
  
-==== Relationship to Understandability: Logging verbosity is worse for slow tests.
+#### Relationship to Understandability: Logging verbosity is worse for slow tests.
  
 Slow running tests are also hard to understand, because logging and metadata is expanded over a larger period of time, increasing the amount
 of information needed to be attended to diagnose an issue. For example, to test this, we have intentionally misconfigured my CIDR information for a calico CNI,
@@ -276,11 +278,11 @@ Thus, by increasing the performance of our tests, we also increase their underst
 audited for inspecting a failure may be reduced by a 50% (currently, 50% of the output for failing network policy tests is that of the polling
 process for pods spinning up, which is easily avoided by a fixed server and client pod).
  
-== Documentation
+### Documentation
  
 Documenting network states is very hard, in any scenario.  Since the NetworkPolicy ginkgo tests are curently not documented outside of the code, no specific evidence is required here.  This proposal aims not to Document these tests, but rather , to make the code more readable, and thus self-documenting.  However, formal documentation of how network policies, generally, are evaluated using a truth table approach, is a part of this proposal.  This generic documentation will be insightful and concise for those needing to test their NetworkPolicy implementations, and likely to not go obsolete, due to the generic nature of the truth-table/matrix approach (compared to the highly specific nature of existing tests).
  
-= Solution to the Problem
+## Solution to the Problem
  
 In short, our solution to this problem follows
  
@@ -291,17 +293,13 @@ In short, our solution to this problem follows
 - *Increase debuggability* by leveraging the performance changes above.
 - *Audit all existing tests* For logical redundancy and consistency
  
- 
-== Detailed Solution proposal
+### Detailed Solution proposal
  
 There are many solutions, and this proposal outlines the most obvious approach which is relatively simple to implement, and minimally abstract, so as to not overcomplicate the testing framework or add technical debt.
  
-=== Code improvements
+### Code improvements
  
- 
- 
- 
-==== Part 1:
+#### Part 1:
  
  
 1. Define a common set of namespaces, and pods, used to make a truth table that applies to all tests.  This is demonstrated in diagram 1b and 2.
@@ -341,9 +339,9 @@ namespace has connectivity, even when the truth table explicitly forbids it", wh
 related to flagrantly allowing internamespace traffic.  Since it is obvious how such a matrix might be defined in Go, we dont provide a
 code snippet or API example.
  
-==== Part 2:
+#### Part 2:
  
-===== Only define whitelisted communication as part of the verification of connectivity
+##### Only define whitelisted communication as part of the verification of connectivity
  
 Since verification is quite extensive for these tests, the `Ginkgo.By` statements will be done iteratively,
 rather then using bespoke sentences for each case.  This can be done by mapping a set of predefined network policies to a change set, which defines exactly which namespace/pod pairs are allowed to talk to one another.  This can be expressed in go code as follows, using `DenyAll` as an easy to understand example.
@@ -367,7 +365,7 @@ var DenyAll = &TruthTableEntry{
 ```
 Note that this is naturally stackable, by nature of the fact that non-existent entries in the map are false, and existent entries can be idempotently overwritten.  Thus, a side-effect of using this model for defining tests is that we can build new, stacked tests very easily by combining multiple truth table entries, and then verifying the union of all whitelists.
 
-===== Reusable static snippets for namespaces and pods
+##### Reusable static snippets for namespaces and pods
  
 The definition of the 'policyForTest1' will be made concsie by the following mechanism.
  
@@ -384,34 +382,39 @@ Currently almost every test had a clause such as:
  
 And a verbose `policy := &networkingv1.NetworkPolicy{ ... }` declaration, which is 20 to 50 lines long (see problem statement for details). As demonstrated in the `DenyAll` example, these verbose policy structs no long exist in the individual tests, and are also the actual declaration for said policies is much smaller, meaning that subtle differences highlighted in the *problems* section above will be easier to tease out and reason about.
  
-==== Part 3:
+##### Part 3:
  
 Rewrite each individual test, reviewing semantics, to be precisely worded (and possibly verbose), and to simply define a specific policy and
 set of 'whitelisted' communication associated with this policy.  The whitelisting would be defined as a map of namespace->pods, since all other
 information in the truth table is false.
  
-===== Note on Acceptance
+##### Note on Acceptance
  
 Of course, each old tests will be converted to a truth table, first, as part of this work, so that the parity between old and new tests is
 clear and obvious (alternatively, these can be a next generation of policy tests which live in parallel to existing network policy tests for a release cycle, while they are vetted).
  
-=== Defining community standards and establishing ownership
- 
+## Next steps: Defining community standards and establishing ownership
+
 As of now, network policy tests are not run regularly against any CNI.  Although we should not endorse one CNI over another, we should regularly validate
 that the NetworkPolicy tests *can* pass on *some* provider.  As part of this proposal, we propose commiting an annotation to the existing network_policy.go code which states, in clear and simple terms, what environment the network_policy.go test suite was run in, the last time which it was commited and passed.  Its also acceptable to commit this as a Markdown file in the documentation.
  
 There may be other, better ways of doing this.  Running an upstream validation job of these tests as a weekly PROW job, for example, would be a good way to make sure that these tests don't regress in the future.  this comes at the cost of coupling a job to an external CNI provider, so its not being explicitly suggested.
+
+## Alternative solutions to this proposal
  
-=== Alternative solutions
- 
-==== Keeping the tests as they are and fixing them one by one
+#### Keeping the tests as they are and fixing them one by one
  
 We could simply audit existing tests for completeness, and one-by-one, add new test coverage where it is lacking.  This may be feasible for the 23 tests we currently have, but it would be likely to bit-rot over time, and not solve the extensibility or debuggability problems.
  
-==== Building a framework for NetworkPolicy evaluation
+#### Building a framework for NetworkPolicy evaluation
  
 In this proposal, we've avoided suggesting a complex framework that could generate large numbers of services and pods, and large permuatations of scenarios.
 However, it should be noted that such a framework might be useful in testing performance at larger scales, and comparing CNI providers with one another. Such a framework could easily be adopted to cover the minimal needs of the NetworkPplicy implemetnation in core Kubernetes, so it might be an interesting initiative to work on.  Such an initiative might fall on the shoulders of another Sig, related to performance or scale.  Since NetworkPolicy's have many easy to address
 problems which are important as they stand, we avoid going down this rat-hole, for now.
  
 That said, the work proposed here might be a first step towared a more generic CNI testing model.
+
+#### Have the CNI organization create such tests
+
+We cannot proxy this work to the CNI organization, because in large part, the semantics of how network policy's are implemented and what we care about from an API perspective is defined by Kubernetes itself.  As we propose expansion of the Network Policy API, we need a way to express the effects of these new APIs in code, concisely, in a manner which is gauranteed to test robustly.
+
