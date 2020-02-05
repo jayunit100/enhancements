@@ -327,16 +327,16 @@ There are many solutions, and this proposal outlines the most obvious approach w
 These resources are created for every test.
  
 2. Define a structure for expressing the truth table of results.   Since clasically a truth table can be expressed as a 2D matrix, where
-rows and columns are the lexically sorted list of all pod namespace pairs defined above, formatted as `namespace-pod`.  For example, a truth table defining a NetworkPolicy where only pods in the same namespace of the server can communicate to it, would look like this.
+rows and columns are the lexically sorted list of all pod namespace pairs defined above, formatted as `namespace-pod`.  For example, a truth table defining a NetworkPolicy where only pods in the same namespace of the server can communicate to it, would look like this.  Capital letters are *namespaces*, and lower case letters are *pods* in those namespaces.  The tuple value represents connectivity to ports *80* and *81*, respectively.
  
-|    | Fa | Fb | Aa | Ba | Ab | Bb |
-|----|----|----|----|----|----|----|
-| Fa | 1  | 1  | 0  | 0  | 0  |  0 |
-| Fb | 1  | 0  | 0  | 0  | 0  |  0 |
-| Aa | 0  | 0  | 0  | 0  | 0  |  0 |
-| Ba | 0  | 0  | 0  | 0  | 0  |  0 |
-| Ab | 0  | 0  | 0  | 0  | 0  |  0 |
-| Bb | 0  | 0  | 0  | 0  | 0  |  0 |
+|    | Aa   | Ab   | Ba   | Bb   | Ca   | Cb  |
+|----|------|------|------|------|------|-----|
+| Aa | 1,0  | 1,0  | 0,0  | 0,0  | 0,0  | 0,0 |
+| Ab | 1,0  | 0,0  | 0,0  | 0,0  | 0,0  | 0,0 |
+| Ba | 0,0  | 0,0  | 0,0  | 0,0  | 0,0  | 0,0 |
+| Bb | 0,0  | 0,0  | 0,0  | 0,0  | 0,0  | 0,0 |
+| Cb | 0,0  | 0,0  | 0,0  | 0,0  | 0,0  | 0,0 |
+| Cb | 0,0  | 0,0  | 0,0  | 0,0  | 0,0  | 0,0 |
  
 Most of the Matrices for this table will be permuting the first row and column, since the server pod currently always resides in the framework namespace.  However, tests might confirm two way connectivity
 and other types of connectivity in the future, and such an expansion would work very cleanly with a matrix.
