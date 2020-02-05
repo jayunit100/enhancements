@@ -32,8 +32,12 @@ The current network policy tests have a few issues which, without increasing tec
  
 ### Related issues
 
-TODO, find these and fill them out, most importantly the ingress update pod issue which demonstrates that we arent curating these tests as a community.
- 
+
+- https://github.com/kubernetes/kubernetes/issues/87857
+- https://github.com/kubernetes/kubernetes/issues/85908
+- https://github.com/kubernetes/kubernetes/issues/86578
+- https://github.com/kubernetes/kubernetes/issues/87786
+
 ### Consequences of this problem
  
 The consequences of this problem is that
