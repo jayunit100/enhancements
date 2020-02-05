@@ -2,6 +2,7 @@
 title: Homogenizing and expanding NetworkPolicy test coverage while reducing their complexity
 authors:
   - "@jayunit100"
+  - "@ssavas"
 owning-sig: sig-network
 reviewers: TBD
 approvers: TBD
