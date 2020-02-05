@@ -12,7 +12,7 @@ status: implementable
 ---
 
 
-Special thanks to members of the Calico community for helping to vet this proposal as we evolved it :)
+Special thanks to members of the Calico community, Sedef Saavas, and others for helping to vet this proposal. 
 
 # Homogenizing and expanding NetworkPolicy tests while reducing their complexity
 
