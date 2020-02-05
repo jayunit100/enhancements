@@ -1,3 +1,5 @@
+Special thanks to members of the Calico community for helping to vet this proposal as we evolved it :)
+
 # Homogenizing and Expanding NetworkPolicy tests while reducing their complexity
 
 This proposal suggest that we leverage truth tables, uniform positive controls tests, and explicit whitelisting mappings to address the opportunities for improvement  in our existing NetworkPolicy test suite, which comprises 23 tests which can take 30 minutes to 1 hour to run.
