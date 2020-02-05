@@ -283,6 +283,12 @@ process for pods spinning up, which is easily avoided by a fixed server and clie
 ### Documentation
  
 Documenting network states is very hard, in any scenario.  Since the NetworkPolicy ginkgo tests are curently not documented outside of the code, no specific evidence is required here.  This proposal aims not to Document these tests, but rather , to make the code more readable, and thus self-documenting.  However, formal documentation of how network policies, generally, are evaluated using a truth table approach, is a part of this proposal.  This generic documentation will be insightful and concise for those needing to test their NetworkPolicy implementations, and likely to not go obsolete, due to the generic nature of the truth-table/matrix approach (compared to the highly specific nature of existing tests).
+
+As a few examples of this:
+- the test `Creating a network policy for the server which allows traffic from the pod 'client-a' in same namespace` actually needs to confirm that *no outside* namespace can communicate with the server.
+- the test outlined in Figure2 is another examples of a test which isn't described comprehensively.
+
+In the solutions section, we will highlight how the proposal makes these tests, and thus the semantics of network policies, explicit and self documenting.
  
 ## Solution to the Problem
  
@@ -365,6 +371,8 @@ var DenyAll = &TruthTableEntry{
 	Whitelist: map[string]string{},
 }
 ```
+As a side note: the comingled `Whitelist` fields above makes the semantics of our network policy API highly explicit, helping significantly with the Documentation of NetworkPolicies.
+
 Note that this is naturally stackable, by nature of the fact that non-existent entries in the map are false, and existent entries can be idempotently overwritten.  Thus, a side-effect of using this model for defining tests is that we can build new, stacked tests very easily by combining multiple truth table entries, and then verifying the union of all whitelists.
 
 ##### Reusable static snippets for namespaces and pods
