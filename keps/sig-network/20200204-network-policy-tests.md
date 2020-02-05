@@ -94,15 +94,15 @@ namespaces created in the entire network policy test suite.
 |  +------+              +------+                                         |
 |  |      |              |      |                                         |
 |  |   cA |              |  cB  |     Figure 1b: The above test           |
-|  +--+---+              +----+-+     is only complete if a permutation   |
-|     |   +---------------+   |       of other test scenarios which       |
-|     |   |    server     |   |       guarantee that (1) There is no      |
-|     +--->    80,81      +<--+       namespace that whitelists traffic   |
+|  +--+---+              +----X-+     is only complete if a permutation   |
+|     |   +---------------+   X       of other test scenarios which       |
+|     |   |    server     |   X       guarantee that (1) There is no      |
+|     +--->    80,81      XXXXX       namespace that whitelists traffic   |
 |         |               |           and that (2) there is no "container"
 |         +----X--X-------+           which whitelists traffic.           |
 | +------------X--X---------------+                                       |
 | |            X  X               |   We limit the amount of namespaces   |
-| |   +------+-X  X-+-------+  nsB|   to test to 2 because 2 is the union |
+| |   +------XXX  XXX-------+  nsB|   to test to 2 because 2 is the union |
 | |   |      | X  X |       |     |   of all namespaces.                  |
 | |   |  cA  | X  X |   cB  |     |                                       |
 | |   |      | X  X |       |     |   By leveraging the union of all      |
@@ -111,7 +111,7 @@ namespaces created in the entire network policy test suite.
 | +-------------------------------+   to one another via a simple         |
 |  +-----------X--X---------------+   truth table.                        |
 |  |           X  X               |                                       |
-|  |  +------+-X  X-+-------+  nsC|   This fulfills one of the cor        |
+|  |  +------XXX  XXX-------+  nsC|   This fulfills one of the cor        |
 |  |  |      |      |       |     |   requirements of this proposal:      |
 |  |  |  cA  |      |   cB  |     |   comparing and reasoning about       |
 |  |  |      |      |       |     |   network policy test completeness    |
