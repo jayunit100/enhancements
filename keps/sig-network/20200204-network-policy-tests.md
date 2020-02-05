@@ -420,7 +420,9 @@ that the NetworkPolicy tests *can* pass on *some* provider.  As part of this pro
  
 There may be other, better ways of doing this.  Running an upstream validation job of these tests as a weekly PROW job, for example, would be a good way to make sure that these tests don't regress in the future.  this comes at the cost of coupling a job to an external CNI provider, so its not being explicitly suggested.
 
-## Other Improvements
+## Other Improvement Ideas
+
+These may be included in this proposal, but as of now, aren't detailed yet.
 
 ### Node specific policy validation (Contributed by Sedef Saavas)
 
