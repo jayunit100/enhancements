@@ -1,6 +1,7 @@
-= Problem Statement
- 
- 
+# Homogenizing and Expanding NetworkPolicy tests while reducing their complexity
+
+This proposal suggest that we leverage truth tables, uniform positive controls tests, and explicit whitelisting mappings to address the opportunities for improvement  in our existing NetworkPolicy test suite, which comprises 23 tests which can take 30 minutes to 1 hour to run.
+
 The current network policy tests have a few issues which, without increasing technical debt, can be addressed architecturally.
  
 - *Incompleteness*: We do not confirm that a common set of negative scenarios for different policies.
@@ -9,7 +10,7 @@ The current network policy tests have a few issues which, without increasing tec
 - *Performance*: They suffer from low performance due to the high number of pods created.  Network policy tests can take 30 minutes or longer.
 - *Documentation and Community*: The overall situation for these tests is that they are underdocumented and poorly understood by the community, and its not clear how these tests are vetted when they are modified.
  
-=== Related issues:  TODO, find these and fill them out, most importantly the ingress update pod issue which demonstrates that we arent curating these tests as a community.
+### Related issues:  TODO, find these and fill them out, most importantly the ingress update pod issue which demonstrates that we arent curating these tests as a community.
  
 == Consequences of this problem
  
