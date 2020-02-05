@@ -1,9 +1,27 @@
+---
+title: Homogenizing and expanding NetworkPolicy tests while reducing their complexity
+authors:
+  - "@jayunit100"
+owning-sig: sig-network
+reviewers: TBD
+approvers: TBD
+editor: TBD
+creation-date: 2020-02-04
+last-updated: 2020-02-05
+status: implementable
+---
+
+
 Special thanks to members of the Calico community for helping to vet this proposal as we evolved it :)
 
-# Homogenizing and Expanding NetworkPolicy tests while reducing their complexity
+# Homogenizing and expanding NetworkPolicy tests while reducing their complexity
 
+## Summary
 This proposal suggest that we leverage truth tables, uniform positive controls tests, and explicit whitelisting mappings to address the opportunities for improvement  in our existing NetworkPolicy test suite, which comprises 23 tests which can take 30 minutes to 1 hour to run.
+- Defining a common set of test scenarios for all network policy tests and increasing performance by reusing a set of containers.
+- Rearchitecting network policy tests to enhance readibility and reusability.
 
+## Motivation 
 The current network policy tests have a few issues which, without increasing technical debt, can be addressed architecturally.
  
 - *Incompleteness*: We do not confirm that a common set of negative scenarios for different policies.  We also do not confirm a complete set of *positive* connectivity, before starting tests (note: 4 out of the existing 23 tests do actually do *some* positive control validation before applying policies, and all tests do postive validation *after* policy application).
@@ -306,6 +324,11 @@ There are many solutions, and this proposal outlines the most obvious approach w
   - pod b
  
 These resources are created for every test.
+
+A wider range of scenarios that may be tested can be seen in the figure below.
+![](test-scenarios.png)
+ In this figure, inter/intra-namespace tests on the same node and inter-intra namespace tests on different nodes are demonstrated.
+Another important network-policy-test case is testing host-network only containers. C4, C5, C8, and C9 are host-network only containers.
  
 2. Define a structure for expressing the truth table of results.   Since clasically a truth table can be expressed as a 2D matrix, where
 rows and columns are the lexically sorted list of all pod namespace pairs defined above, formatted as `namespace-pod`.  For example, a truth table defining a NetworkPolicy where only pods in the same namespace of the server can communicate to it, would look like this.  Capital letters are *namespaces*, and lower case letters are *pods* in those namespaces.  The tuple value represents connectivity to ports *80* and *81*, respectively.
