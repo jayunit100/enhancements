@@ -384,11 +384,12 @@ Rewrite each individual test, reviewing semantics, to be precisely worded (and p
 set of 'whitelisted' communication associated with this policy.  The whitelisting would be defined as a map of namespace->pods, since all other
 information in the truth table is false.
  
-##### Note on Acceptance
- 
-Of course, each old tests will be converted to a truth table, first, as part of this work, so that the parity between old and new tests is
-clear and obvious (alternatively, these can be a next generation of policy tests which live in parallel to existing network policy tests for a release cycle, while they are vetted).
- 
+##### Note on Acceptance and Backwards compatibility
+
+Thus far there are two obvious ways to ensure backwards compatibility. 
+- Each old test will be converted to a truth table, first, as part of this work, so that the parity between old and new tests is clear and obvious 
+- Alternatively, these can be a next generation of policy tests which live in parallel to existing network policy tests for a release cycle, while they are vetted
+
 ## Next steps: Defining community standards and establishing ownership
 
 As of now, network policy tests are not run regularly against any CNI.  Although we should not endorse one CNI over another, we should regularly validate
