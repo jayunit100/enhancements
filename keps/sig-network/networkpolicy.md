@@ -96,7 +96,11 @@ namespaces created in the entire network policy test suite.
 |                                                  similar to figure 1.   |
 +-------------------------------------------------------------------------+
 ```
- 
+
+#### Other concrete examples of incompleteness
+
+The above diagrams show that incompleteness is virtually impossible, the way the tests are written, because of the fact that each test is manually verifiying bespoke cases.  More concretely, however, a look at `should enforce policy to allow traffic only from a different namespace, based on NamespaceSelector [Feature:NetworkPolicy]` reveals that some tests don't do positive controls (validation of preexisting connectivity), whereas others *do* do such controls.
+
 ### Understandability
  
 In this next case, we'll take another example test, which is meant to confirm that intra-namespace
