@@ -329,10 +329,6 @@ There are many solutions, and this proposal outlines the most obvious approach w
  
 These resources are created for every test.
 
-A wider range of scenarios that may be tested can be seen in the figure below.
-![](test-scenarios.png)
- In this figure, inter/intra-namespace tests on the same node and inter-intra namespace tests on different nodes are demonstrated.
-Another important network-policy-test case is testing host-network only containers. C4, C5, C8, and C9 are host-network only containers.
  
 2. Define a structure for expressing the truth table of results.   Since clasically a truth table can be expressed as a 2D matrix, where
 rows and columns are the lexically sorted list of all pod namespace pairs defined above, formatted as `namespace-pod`.  For example, a truth table defining a NetworkPolicy where only pods in the same namespace of the server can communicate to it, would look like this.  Capital letters are *namespaces*, and lower case letters are *pods* in those namespaces.  The tuple value represents connectivity to ports *80* and *81*, respectively.
@@ -423,6 +419,19 @@ As of now, network policy tests are not run regularly against any CNI.  Although
 that the NetworkPolicy tests *can* pass on *some* provider.  As part of this proposal, we propose commiting an annotation to the existing network_policy.go code which states, in clear and simple terms, what environment the network_policy.go test suite was run in, the last time which it was commited and passed.  Its also acceptable to commit this as a Markdown file in the documentation.
  
 There may be other, better ways of doing this.  Running an upstream validation job of these tests as a weekly PROW job, for example, would be a good way to make sure that these tests don't regress in the future.  this comes at the cost of coupling a job to an external CNI provider, so its not being explicitly suggested.
+
+## Other Improvements
+
+### Node specific policy validation (Contributed by Sedef Saavas)
+
+A wider range of scenarios that may be tested can be seen in the figure below.
+![](test-scenarios.png)
+ In this figure, inter/intra-namespace tests on the same node and inter-intra namespace tests on different nodes are demonstrated.
+Another important network-policy-test case is testing host-network only containers. C4, C5, C8, and C9 are host-network only containers.
+
+### Ensuring that large policy stacks evaluate correctly
+
+Right now the coverage of Policy stacks is rudimentary, we may want to test for a large number(i.e. 10) of policy's, stacked, depending on wether we think this may be a bug source for providers.
 
 ## Alternative solutions to this proposal
  
