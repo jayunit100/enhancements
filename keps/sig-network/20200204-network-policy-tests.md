@@ -32,6 +32,7 @@ The current network policy tests have a few issues which, without increasing tec
  
 ### Related issues
 
+As an overall improvement, this KEP will help to address the solutions for several existing issues in upstream Kuberentes.
 
 - https://github.com/kubernetes/kubernetes/issues/87857
 - https://github.com/kubernetes/kubernetes/issues/85908
