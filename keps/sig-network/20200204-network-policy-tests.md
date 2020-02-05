@@ -1,5 +1,5 @@
 ---
-title: Homogenizing and expanding NetworkPolicy test coverage while reducing their complexity
+title: Homogenizing and expanding NetworkPolicy test coverage, leveraging audit data, while increasing performance, forensics, complexity of the test suite.
 authors:
   - "@jayunit100"
 owning-sig: sig-network
