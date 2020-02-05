@@ -29,7 +29,11 @@ The consequences of this problem is that
 ## Detailed examples of the Problem statement
  
 ### Incompleteness
- 
+
+As mentioned in the pre-amble, there is sporadic validation of both positive and negative connectivity in all tests, and in many cases this validation is meaningful.  However, in none of the cases, is it complete.  That is, we do not have any tests which validate all obvious intra and inner namespace connectivity holes, both before and after application of policies.  
+
+Examples which visualize this ensue:
+
 For our first example, we will look at the incompleteness of one of the first tests
 in the test suite for network_policy.go.  In this test, the following assertions are
 made to verify that inter-namespace traffic can be blocked via NetworkPolicys.
