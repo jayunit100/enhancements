@@ -345,16 +345,27 @@ code snippet or API example.
 ===== Only define whitelisted communication as part of the verification of connectivity
  
 Since verification is quite extensive for these tests, the `Ginkgo.By` statements will be done iteratively,
-rather then using bespoke sentences for each case.  This can be done by mapping a set of predefined network policies to a change set, which defines exactly which namespace/pod pairs are allowed to talk to one another.  This can be expressed in go code as follows:
+rather then using bespoke sentences for each case.  This can be done by mapping a set of predefined network policies to a change set, which defines exactly which namespace/pod pairs are allowed to talk to one another.  This can be expressed in go code as follows, using `DenyAll` as an easy to understand example.
  
 ```
-policyForTest1 := networkinvv1.NetworkPolicySpec{...}
-policyForTest1Description := "Confirm that local namespace traffic is whitelisted"
-policiesMap["policyForTest1"] := map[string]string{"FaFa":1, "FbFa":1}
+// DenyAll is a NP that denies all traffic, selects no whitelist pods.
+var DenyAll = &TruthTableEntry{
+	Description: "Should support a default-deny policy [Feature:NetworkPolicy]",
+	Policy: &networkingv1.NetworkPolicy{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "deny-all",
+		},
+		Spec: networkingv1.NetworkPolicySpec{
+			PodSelector: emptyLabelSelector,
+			Ingress:     emptyIngress,
+		},
+	},
+	// The pods which are whitelisted by this policy.
+	Whitelist: map[string]string{},
+}
 ```
- 
-Once this policiesMap is defined, Ginkgo.By statements may
- 
+Note that this is naturally stackable, by nature of the fact that non-existent entries in the map are false, and existent entries can be idempotently overwritten.  Thus, a side-effect of using this model for defining tests is that we can build new, stacked tests very easily by combining multiple truth table entries, and then verifying the union of all whitelists.
+
 ===== Reusable static snippets for namespaces and pods
  
 The definition of the 'policyForTest1' will be made concsie by the following mechanism.
@@ -370,65 +381,7 @@ Currently almost every test had a clause such as:
             })
 ```
  
-And a verbose `policy := &networkingv1.NetworkPolicy{ ... }` declaration, which is 20 to 50 lines long (see problem statement for details).
- 
-To reduce the boilerplate in these segments (and most importantly, to make it very easy to differentiate the policys), we will declare the following
-reusable structures:
- 
-1. PodSelector for the server
- 
-```
-        PodSelector: metav1.LabelSelector{
-                MatchLabels: map[string]string{
-                    "pod-name": podServerLabelSelector,
-                },
-        },
-```
-Will get replaced with `PodSelector: metav1.LabelSelector{server}`.
- 
-2. Client side pod selector labels will be made for all pods (a,b,c) defined in Part 1.
- 
-```
-        PodSelector: &metav1.LabelSelector{
-                MatchLabels: map[string]string{
-                    "pod-name": "client-a",
-                },
-        }
-```
-3. Namespace selectors will be made analagous to (2).
- 
-This will result in a very concise namespace definition:
- 
-```
-    Ingress: []networkingv1.NetworkPolicyIngressRule{{
-                        From: []networkingv1.NetworkPolicyPeer{{
-                            NamespaceSelector: &metav1.LabelSelector{
-                                MatchLabels: map[string]string{
-                                    "ns-name": nsBName,
-                                },
-                            },
-                            PodSelector: &metav1.LabelSelector{
-                                MatchLabels: map[string]string{
-                                    "pod-name": "client-a",
-                                },
-                            },
-                        }},
-                    }},
-```
-Would, for example, be replaced with:
-```
-          Ingress: []networkingv1.NetworkPolicyIngressRule{{
-                        From: []networkingv1.NetworkPolicyPeer{{
-                            NamespaceSelector: nsB,
-                            PodSelector: clientA,
-                        }},
-            }},
-```
- 
-Of course, we may be able to make these even smaller, but for this proposal are erring on changes which are
-not too abstract relative to the essentials of what needs to be conveyed.  It is obvious that using functions, we could make the reduction of boilerplate even more concise, and we are of course open to
-exploring this further as we move through the implementation stages.
- 
+And a verbose `policy := &networkingv1.NetworkPolicy{ ... }` declaration, which is 20 to 50 lines long (see problem statement for details). As demonstrated in the `DenyAll` example, these verbose policy structs no long exist in the individual tests, and are also the actual declaration for said policies is much smaller, meaning that subtle differences highlighted in the *problems* section above will be easier to tease out and reason about.
  
 ==== Part 3:
  
