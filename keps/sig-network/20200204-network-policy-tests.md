@@ -11,7 +11,6 @@ last-updated: 2020-02-05
 status: implementable
 ---
 
-
 Special thanks to members of the Calico community, Sedef Saavas, and others for helping to vet this proposal. 
 
 # Homogenizing and expanding NetworkPolicy tests while reducing their complexity
@@ -35,6 +34,7 @@ The current network policy tests have a few issues which, without increasing tec
 As an overall improvement, this KEP will help to address the solutions for several existing issues in upstream Kuberentes.
 
 - https://github.com/kubernetes/kubernetes/issues/87857
+- https://github.com/kubernetes/kubernetes/issues/87893
 - https://github.com/kubernetes/kubernetes/issues/85908
 - https://github.com/kubernetes/kubernetes/issues/86578
 - https://github.com/kubernetes/kubernetes/issues/87786
@@ -52,6 +52,8 @@ The consequences of this problem is that
 ## Detailed examples of the Problem statement
  
 ### Incompleteness
+
+A few concrete missing tests are obvious incompleteness examples, such as https://github.com/kubernetes/kubernetes/issues/87893 and https://github.com/kubernetes/kubernetes/issues/46625
 
 As mentioned in the pre-amble, there is sporadic validation of both positive and negative connectivity in all tests, and in many cases this validation is meaningful.  However, in none of the cases, is it complete.  That is, we do not have any tests which validate all obvious intra and inner namespace connectivity holes, both before and after application of policies.  
 
