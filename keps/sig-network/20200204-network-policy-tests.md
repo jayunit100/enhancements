@@ -201,7 +201,7 @@ the semantics of it.
 ```
  
 ### Extensibility
- 
+
 The previous scenarios look at logical issues with the current tests.  These issues can be mitigated by simply having more tests, which are as verbose as the existing tests.  However.
  
 - Each test can be between 50 to 100 lines long.
@@ -399,11 +399,27 @@ var AllowAllInnerNamespace = &TruthTableEntry{
 	Whitelist: map[string]bool{"AaAs": true},
 }
 ```
+
+##### (Optional) Use builders to make creation of policy rules extremely information dense
+
+Note that, as an alternative to reusable structs, we've also prototyped an easy to use builder implementation, which makes it very easy to instrument the small number of non-null fields in each NetworkPolicy, using the builder defined here (prototype) https://gist.github.com/6a62266e0eec2b15e5250bd65daa4faa. 
+```
+	builder := &NetworkPolicySpecBuilder{}
+				builder = builder.SetName("allow-client-a-via-named-port-egress-rule").SetPodSelector(map[string]string{"pod-name": "client-a"})
+				builder = builder.SetTypeIngress()
+				builder.AddIngress(nil, nil, &s80, nil,
+					nil,
+					&map[string]string{"ns-name": *nsBNamePtr},
+					nil,
+					nil) // make sure named ports work
+
+```
+
 As a side note: the comingled `Whitelist` fields above makes the semantics of our network policy API highly explicit, helping significantly with the Documentation of NetworkPolicies.
 
 Note that this is naturally stackable, by nature of the fact that non-existent entries in the map are false, and existent entries can be idempotently overwritten.  Thus, a side-effect of using this model for defining tests is that we can build new, stacked tests very easily by combining multiple truth table entries, and then verifying the union of all whitelists.
 
-##### Reusable static snippets for namespaces and pods
+##### Reusable static snippets or builders for namespaces and pods
  
 The definition of the 'policyForTest1' will be made concsie by the following mechanism.
  
