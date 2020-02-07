@@ -19,6 +19,7 @@ Special thanks to members of the Calico community, Sedef Saavas, and others for 
 This proposal suggest that we leverage truth tables, uniform positive controls tests, and explicit whitelisting mappings to address the opportunities for improvement  in our existing NetworkPolicy test suite, which comprises 23 tests which can take 30 minutes to 1 hour to run.
 - Defining a common set of test scenarios for all network policy tests and increasing performance by reusing a set of containers.
 - Rearchitecting network policy tests to enhance readibility and reusability.
+- Improve coverage for NetworkPolicy functional tests.
 
 ## Motivation 
 The current network policy tests have a few issues which, without increasing technical debt, can be addressed architecturally.
@@ -129,6 +130,21 @@ namespaces created in the entire network policy test suite.
 #### Other concrete examples of incompleteness
 
 The above diagrams show that incompleteness is virtually impossible, the way the tests are written, because of the fact that each test is manually verifiying bespoke cases.  More concretely, however, a look at `should enforce policy to allow traffic only from a different namespace, based on NamespaceSelector [Feature:NetworkPolicy]` reveals that some tests don't do positive controls (validation of preexisting connectivity), whereas others *do* do such controls.
+
+#### List of missing/incomplete functional test cases.
+
+- IPBlock Except case: Currently, no test case exist to cover a NetworkPolicy
+  IPBlock selector which includes an ``except`` clause.
+- Stacked IPBlock case: Need to add a test case to verify the traffic when a
+  CIDR (say 10.0.1.0/24) is used in an ``except`` clause in one NetworkPolicy,
+  and the same CIDR is also used in an allow IPBlock rule in another
+  NetworkPolicy, both targeting the same ``spec.PodSelector`` within the same
+  Namespace.
+- NamedPort resolving to multiple port numbers: Current test cases only test
+  named port NetworkPolicies resolving to a single port number. Instead,
+  improve the test case by testing that multiple Pods with the same name
+  port backed by different port numbers are being allowed correctly by the
+  NetworkPolicy rule.
 
 ### Understandability
  
