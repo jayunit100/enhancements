@@ -34,11 +34,11 @@ The current network policy tests have a few issues which, without increasing tec
 
 As an overall improvement, this KEP will help to address the solutions for several existing issues in upstream Kuberentes.
 
-- https://github.com/kubernetes/kubernetes/issues/87857
-- https://github.com/kubernetes/kubernetes/issues/87893
-- https://github.com/kubernetes/kubernetes/issues/85908
-- https://github.com/kubernetes/kubernetes/issues/86578
-- https://github.com/kubernetes/kubernetes/issues/87786
+- https://github.com/kubernetes/kubernetes/issues/87857 (docs and understandability)
+- https://github.com/kubernetes/kubernetes/issues/87893 (holes in our test coverage matrix)
+- https://github.com/kubernetes/kubernetes/issues/85908 (failing tests, unclear semantics)
+- https://github.com/kubernetes/kubernetes/issues/86578 (needs e2e coverage)
+- https://github.com/kubernetes/kubernetes/issues/87709 (logging of netpol actions, will help describing states we reach) 
 
 ### Consequences of this problem
  
