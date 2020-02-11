@@ -11,7 +11,7 @@ last-updated: 2020-02-05
 status: implementable
 ---
 
-Special thanks to members of the Calico community, Sedef Saavas, and others for helping to vet this proposal. 
+Special thanks to members of the Calico community, Abishek Raut (vmware), Sedef Saavas (vmware), Lui Zang (google) and others for helping with this proposal. 
 
 # Homogenizing and expanding NetworkPolicy tests while reducing their complexity
 
