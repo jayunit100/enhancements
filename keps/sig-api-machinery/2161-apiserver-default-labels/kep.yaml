@@ -4,18 +4,17 @@ authors:
   - "@thockin"
   - "@jayunit100"
   - "@rikatz"
-owning-sig: sig-apimachinery
+owning-sig: sig-api-machinery
 participating-sigs:
   - sig-network
 status: provisional
 creation-date: 2020-11-22
 reviewers:
-  - @liggitt
-  - @nikhita
+  - "@liggitt"
+  - "@nikhita"
+  - "@thockin"
 approvers:
-  - @thockin
-prr-approvers:
-see-also:
+  - "@thockin"
 replaces:
 stage: alpha
 latest-milestone: "v1.21"
@@ -24,5 +23,7 @@ milestone:
   beta: "v1.22"
   stable: "v1.23"
 feature-gates:
-  - NamespaceDefaultLabelName
+  - name: NamespaceDefaultLabelName
+    components:
+      - kube-apiserver
 disable-supported: true
