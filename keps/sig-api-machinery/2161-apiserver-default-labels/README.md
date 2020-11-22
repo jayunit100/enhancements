@@ -91,7 +91,7 @@ updates.
 
 In https://github.com/kubernetes/enhancements/issues/2112 , we discussed several ways to implement network policies that select namespaces by name, rather than by relying on labels which may be unknown, or uneditable by people writing policies, or untrustworthy.
 
-This was inspired by a broad community ask to target namespaces in this manner, as evidenced by issues such as https://github.com/kubernetes/kubernetes/issues/88253 .  
+This was inspired by a broad community ask to target namespaces in this manner, as evidenced by issues such as https://github.com/kubernetes/kubernetes/issues/88253, and the larger set of user feedback obtained in  https://github.com/jayunit100/network-policy-subproject/blob/master/p0_user_stories.md.
 
 It turns out all solutions:
 Break the old API in fundamental ways that are questionably WRT cost/benefit OR
